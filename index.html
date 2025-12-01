@@ -501,13 +501,6 @@ function getFilteredSongs() {
     applyTheme("light");
   }
 
-  themeToggle.addEventListener("click", () => {
-    const isDark = bodyEl.getAttribute("data-theme") === "dark";
-    const nextTheme = isDark ? "light" : "dark";
-    applyTheme(nextTheme);
-    localStorage.setItem("euebie-theme", nextTheme);
-  });
-
   // 최초 렌더
   renderTable(songs);
   updateSongCount(songs.length);
