@@ -365,8 +365,9 @@
             <th>#</th>
             <th>가수</th>
             <th>제목</th>
-            <th>인스트</th>
-            <th>비고</th>
+            <th>MR</th>
+            <th>키</th>
+            <th>정보</th>
           </tr>
         </thead>
         <tbody id="songTbody">
@@ -426,6 +427,7 @@
       <td>${song.artist}</td>
       <td>${song.title}</td>
       <td>${song.inst ? `<a href="${song.inst}" target="_blank" class="inst-link">🎧</a>` : ""}</td>
+      <td>${song.key || ""}</td>
       <td>${song.note || ""}</td>
       `;
       
