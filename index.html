@@ -214,7 +214,23 @@
     font-size: 0.75rem;
     color: #9ca3af;
   }
-  
+
+  /* 태그 공통 */
+  .tag {
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 3px 6px;
+    display: inline-block;
+  }
+
+  /* 태그 색상 */
+  .tag-kpop { background: #ffd6e7; color: #c2185b; }
+  .tag-jpop { background: #d7ecff; color: #1565c0; }
+  .tag-pop  { background: #fff1c9; color: #b26a00; }
+  .tag-ani  { background: #d0f0ff; color: #0077b6; }
+  .tag-pay  { background: #e4f7d2; color: #558b2f; }
+  .tag-etc  { background: #ede7f6; color: #5e35b1; }
+
   /* 랜덤 추천 애니메이션 */
   @keyframes popFade {
     0% {
@@ -322,6 +338,85 @@
     background: transparent;
   }
 
+  /* 다크 모드 태그 색감 진하게 */
+  body[data-theme="dark"] .tag-kpop {
+    background: #be185d;
+    color: #ffffff;
+  }
+
+  body[data-theme="dark"] .tag-jpop {
+    background: #1e3a8a;
+    color: #dbeafe;
+  }
+
+  body[data-theme="dark"] .tag-pop {
+    background: #b45309;
+    color: #fff7ed;
+  }
+
+  body[data-theme="dark"] .tag-ani {
+    background: #0c4a6e;
+    color: #bae6fd;
+  }
+
+  body[data-theme="dark"] .tag-pay {
+    background: #166534;
+    color: #dcfce7;
+  }
+
+  body[data-theme="dark"] .tag-etc {
+    background: #4c1d95;
+    color: #ede9fe;
+  }
+
+  /* ===== 반응형 (모바일) ===== */
+  @media (max-width: 640px) {
+    .app {
+      padding: 12px 10px;
+    }
+
+    .controls {
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls input {
+      flex: 0 0 68%;
+      font-size: 0.9rem;
+    }
+
+    .controls select {
+      flex: 0 0 30%;
+      font-size: 0.9rem;
+    }
+
+    .controls button {
+      flex: 0 0 100%;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    /* 1번(#), 4번(장르), 5번(비고) 컬럼 숨기기 */
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(4),
+    td:nth-child(4),
+    th:nth-child(5),
+    td:nth-child(5) {
+      display: none;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      white-space: normal;
+    }
+  }
 </style>
 
 </head>
@@ -376,7 +471,7 @@
             <th>#</th>
             <th>가수</th>
             <th>제목</th>
-            <th>인스트</th>
+            <th>장르</th>
             <th>비고</th>
           </tr>
         </thead>
@@ -389,7 +484,7 @@
     </section>
   </div>
 
-  <script src="DB.js"></script>
+  <script src="songs.js"></script>
   
   <script>
     
@@ -466,7 +561,7 @@
         <td>${index + 1}</td>
         <td>${song.artist}</td>
         <td>${song.title}</td>
-        <td>${song.tag}</td>
+        <td>${genreTags}</td>
         <td>${song.note || ""}</td>
       `;
       tbody.appendChild(tr);
