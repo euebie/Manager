@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Euebie Live List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #eef1f4; /* 라이트 기본 */
+    color: #1e293b;
+  }
+
+  .app {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 16px 40px;
+  }
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  header h1 {
+    margin: 0;
+  }
+
+  header p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #475569;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* 헤더 타이틀 크기 조정 */
+  header .header-titles h1:nth-child(1) {
+    font-size: 1.6rem; /* 타이틀 */
+    font-weight: 700;
+  }
+
+  header .header-titles h1:nth-child(2) {
+    font-size: 1.2rem; /* Ver. */
+    font-weight: 600;
+    opacity: 0.7;
+  }
+
+  header .header-titles p#songCount {
+    font-size: 1rem; /* 총 곡수 / 필터링 된 곡수 */
+    margin-top: 4px;
+  }
+
+  .theme-toggle {
+    align-self: flex-start;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    opacity: 0.9;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .controls input,
+  .controls select,
+  .controls button {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 0.9rem;
+  }
+
+  .controls input {
+    flex: 1 1 160px;
+    background: #ffffff;
+    color: #1e293b;
+  }
+
+  .controls input::placeholder {
+    color: #64748b;
+  }
+
+  .controls select {
+    flex: 0 0 130px;
+    background: #ffffff;
+    color: #1e293b;
+  }
+
+  .controls button {
+    flex: 0 0 auto;
+    cursor: pointer;
+    background: #111827;
+    color: #ffffff;
+    font-weight: 500;
+    border: 1px solid #cbd5e1;
+    transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
+  }
+
+  .controls button:hover {
+    opacity: 0.9;
+  }
+
+  .controls button:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  .random-result {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+  }
+
+  .random-title {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+
+  .random-main {
+    font-weight: 600;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .table-wrapper {
+    background: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    border: 1px solid #d1d5db;
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  thead {
+    background: #e2e8f0;
+    color: #1e293b;
+  }
+
+  th,
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3) {
+    white-space: normal;
+  }
+
+  tbody tr:nth-child(odd) {
+    background: #ffffff;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f3f4f6;
+  }
+
+  tbody tr:hover {
+    background: #e0e7ff;
+  }
+
+  .empty-state {
+    padding: 24px 16px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .footer-note {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  /* 태그 공통 */
+  .tag {
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 3px 6px;
+    display: inline-block;
+  }
+
+  /* 태그 색상 */
+  .tag-kpop { background: #ffd6e7; color: #c2185b; }
+  .tag-jpop { background: #d7ecff; color: #1565c0; }
+  .tag-pop  { background: #fff1c9; color: #b26a00; }
+  .tag-ani  { background: #d0f0ff; color: #0077b6; }
+  .tag-pay  { background: #e4f7d2; color: #558b2f; }
+  .tag-etc  { background: #ede7f6; color: #5e35b1; }
+
+  /* 랜덤 추천 애니메이션 */
+  @keyframes popFade {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .random-text.show {
+    animation: popFade 0.28s ease-out;
+  }
+
+  /* ===== 다크 모드 ===== */
+  body[data-theme="dark"] {
+    background: #111827;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .app {
+    background: transparent;
+  }
+
+  body[data-theme="dark"] header h1 {
+    color: #f9fafb;
+  }
+
+  body[data-theme="dark"] header p,
+  body[data-theme="dark"] .footer-note {
+    color: #9ca3af;
+  }
+
+  body[data-theme="dark"] .controls input,
+  body[data-theme="dark"] .controls select {
+    background: #020617;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .controls input::placeholder {
+    color: #6b7280;
+  }
+
+  body[data-theme="dark"] .controls button {
+    background: #1f2937;
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+  }
+
+  body[data-theme="dark"] .random-result {
+    background: #020617;
+    border-color: #1f2937;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .random-title {
+    color: #9ca3af;
+  }
+
+  body[data-theme="dark"] .table-wrapper {
+    background: #020617;
+    border-color: #1f2937;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.8);
+  }
+
+  body[data-theme="dark"] table {
+    font-size: 0.9rem;
+  }
+
+  body[data-theme="dark"] thead {
+    background: #1e293b;
+    color: #f8fafc;
+    font-weight: 700;
+    border-bottom: 2px solid #64748b;
+  }
+
+  body[data-theme="dark"] th {
+    color: #f8fafc !important;
+  }
+
+  body[data-theme="dark"] td {
+    border-bottom-color: #1f2937;
+  }
+
+  body[data-theme="dark"] tbody tr:nth-child(odd) {
+    background: #020617;
+  }
+
+  body[data-theme="dark"] tbody tr:nth-child(even) {
+    background: #050816;
+  }
+
+  body[data-theme="dark"] tbody tr:hover {
+    background: #0f172a;
+  }
+
+  body[data-theme="dark"] .empty-state {
+    color: #9ca3af;
+    background: transparent;
+  }
+
+  /* 다크 모드 태그 색감 진하게 */
+  body[data-theme="dark"] .tag-kpop {
+    background: #be185d;
+    color: #ffffff;
+  }
+
+  body[data-theme="dark"] .tag-jpop {
+    background: #1e3a8a;
+    color: #dbeafe;
+  }
+
+  body[data-theme="dark"] .tag-pop {
+    background: #b45309;
+    color: #fff7ed;
+  }
+
+  body[data-theme="dark"] .tag-ani {
+    background: #0c4a6e;
+    color: #bae6fd;
+  }
+
+  body[data-theme="dark"] .tag-pay {
+    background: #166534;
+    color: #dcfce7;
+  }
+
+  body[data-theme="dark"] .tag-etc {
+    background: #4c1d95;
+    color: #ede9fe;
+  }
+
+  /* ===== 반응형 (모바일) ===== */
+  @media (max-width: 640px) {
+    .app {
+      padding: 12px 10px;
+    }
+
+    .controls {
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls input {
+      flex: 0 0 68%;
+      font-size: 0.9rem;
+    }
+
+    .controls select {
+      flex: 0 0 30%;
+      font-size: 0.9rem;
+    }
+
+    .controls button {
+      flex: 0 0 100%;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      font-size: 0.85rem;
+    }
+
+    /* 1번(#), 4번(장르), 5번(비고) 컬럼 숨기기 */
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(4),
+    td:nth-child(4),
+    th:nth-child(5),
+    td:nth-child(5) {
+      display: none;
+    }
+
+    th:nth-child(2),
+    td:nth-child(2),
+    th:nth-child(3),
+    td:nth-child(3) {
+      white-space: normal;
+    }
+  }
+</style>
+
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="header-top">
+        <div class="header-titles">
+          <h1>으비이 라이브 리스트🎤</h1>
+          <h1>2025.12.01(656화) Ver.</h1>
+          <p id="songCount"></p>
+        </div>
+        <button
+          id="themeToggle"
+          class="theme-toggle"
+          type="button"
+        >
+          🌙 다크 모드
+        </button>
+      </div>
+    </header>
+
+
+    <section class="controls">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="가수 또는 제목 검색(띄어 쓰기 상관 없이 가능)"
+      />
+
+      <select id="genreFilter">
+        <option value="all">전체</option>
+        <option value="kpop">한국</option>
+        <option value="jpop">일본</option>
+        <option value="pop">미국</option>
+        <option value="ani">만화</option>
+        <option value="pay">유료</option>
+        <option value="etc">기타</option>
+      </select>
+      <button id="randomBtn">랜덤 노래 🎲</button>
+    </section>
+
+    <section id="randomBox" class="random-result hidden">
+      <div class="random-title">오늘의 랜덤 추천</div>
+      <div class="random-main" id="randomText"></div>
+    </section>
+
+    <section class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>가수</th>
+            <th>제목</th>
+            <th>장르</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody id="songTbody">
+        </tbody>
+      </table>
+      <div id="emptyState" class="empty-state hidden">
+        조건에 맞는 노래가 없습니다 🥲
+      </div>
+    </section>
+  </div>
+
+  <script src="songs.js"></script>
+  
+  <script>
+    
+  const tbody = document.getElementById("songTbody");
+  const searchInput = document.getElementById("searchInput");
+  const genreFilter = document.getElementById("genreFilter");
+  const randomBtn = document.getElementById("randomBtn");
+  const randomBox = document.getElementById("randomBox");
+  const randomText = document.getElementById("randomText");
+  const songCountEl = document.getElementById("songCount");
+  const emptyState = document.getElementById("emptyState");
+  const themeToggle = document.getElementById("themeToggle");
+  const bodyEl = document.body;
+
+  // 랜덤 박스 초기화
+  function resetRandomBox() {
+    randomBox.classList.add("hidden");
+    randomText.textContent = "";
+  }
+    
+  // 장르 라벨 / 태그 클래스 매핑
+  const GENRE_LABEL = {
+    kpop: "한국",
+    jpop: "일본",
+    pop: "미국",
+    ani: "만화",
+    pay: "유료",
+    etc: "기타",
+  };
+
+  const GENRE_CLASS = {
+    kpop: "tag tag-kpop",
+    jpop: "tag tag-jpop",
+    pop: "tag tag-pop",
+    ani: "tag tag-ani",
+    pay: "tag tag-pay",
+    etc: "tag tag-etc",
+  };
+
+  function genreLabel(code) {
+    return GENRE_LABEL[code] || code;
+  }
+
+  function genreTagClass(code) {
+    return GENRE_CLASS[code] || "tag tag-etc";
+  }
+
+  function updateSongCount(filteredCount) {
+    const totalCount = songs.length; // 전체 곡 수
+
+    // 총 전체 곡 수 / 필터링된 곡 수
+    songCountEl.textContent =
+    `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
+  }
+
+  function renderTable(list) {
+    tbody.innerHTML = "";
+
+    if (!list.length) {
+      emptyState.classList.remove("hidden");
+      return;
+    } else {
+      emptyState.classList.add("hidden");
+    }
+
+    list.forEach((song, index) => {
+      const tr = document.createElement("tr");
+
+      const genreTags = (song.genre || [])
+        .map((g) => `<span class="${genreTagClass(g)}">${genreLabel(g)}</span>`)
+        .join(" ");
+      
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${song.artist}</td>
+        <td>${song.title}</td>
+        <td>${genreTags}</td>
+        <td>${song.note || ""}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function normalize(str) {
+    return (str || "")
+      .toLowerCase()
+      .replace(/\s+/g, ""); // 모든 공백 제거
+  }
+
+function getFilteredSongs() {
+  const keyword = normalize(searchInput.value); // 입력값 공백 제거 + 소문자
+  const filterGenre = genreFilter.value;
+
+  return songs.filter((song) => {
+    // 곡 정보도 공백 제거 + 소문자
+    const title = normalize(song.title);
+    const artist = normalize(song.artist);
+
+    // 아티스트 + 제목을 합쳐서도 검색되게
+    const combined = normalize(`${song.artist || ""} ${song.title || ""}`);
+
+    const matchKeyword =
+      !keyword ||
+      title.includes(keyword) ||
+      artist.includes(keyword) ||
+      combined.includes(keyword);
+
+    const matchGenre =
+      filterGenre === "all" || (song.genre || []).includes(filterGenre);
+
+    return matchKeyword && matchGenre;
+  });
+}
+
+  function updateTable() {
+    const filtered = getFilteredSongs();
+    renderTable(filtered);
+    updateSongCount(filtered.length);
+
+    // 필터/검색 결과가 바뀔 때마다 랜덤 박스 초기화
+    resetRandomBox();
+  }
+
+  // 검색/필터 이벤트
+  searchInput.addEventListener("input", updateTable);
+  genreFilter.addEventListener("change", updateTable);
+
+  // 랜덤 추천
+  randomBtn.addEventListener("click", () => {
+    const filtered = getFilteredSongs();
+
+    if (!filtered.length) {
+      randomBox.classList.remove("hidden");
+      randomText.textContent = "현재 필터 조건에 맞는 노래가 없어요 🥲";
+      return;
+    }
+
+    const idx = Math.floor(Math.random() * filtered.length);
+    const pick = filtered[idx];
+
+    randomBox.classList.remove("hidden");
+    randomText.textContent = `${pick.artist} - ${pick.title}`;
+  });
+
+  // 다크 모드
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      bodyEl.setAttribute("data-theme", "dark");
+      themeToggle.textContent = "☀️ 라이트 모드";
+    } else {
+      bodyEl.removeAttribute("data-theme");
+      themeToggle.textContent = "🌙 다크 모드";
+    }
+  }
+
+  const savedTheme = localStorage.getItem("euebie-theme");
+  if (savedTheme) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme("light");
+  }
+
+  themeToggle.addEventListener("click", () => {
+    const isDark = bodyEl.getAttribute("data-theme") === "dark";
+    const nextTheme = isDark ? "light" : "dark";
+    applyTheme(nextTheme);
+    localStorage.setItem("euebie-theme", nextTheme);
+  });
+
+  // 최초 렌더
+  renderTable(songs);
+  updateSongCount(songs.length);
+
+</script>
+</body>
+</html>
