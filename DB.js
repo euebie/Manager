@@ -12,7 +12,7 @@ const songs = [
       { artist: "강수지", title: "혼자만의 겨울", inst: "https://youtu.be/PpCgjouTxvI", key: "0", note: "", genre: ["kpop"] },
       { artist: "강수지", title: "흩어진 나날들", inst: "https://youtu.be/TNZeV7iYUuw", key: "0", note: "", genre: ["kpop"] },
       { artist: "강승모", title: "무정 부르스", inst: "", key: "+9", note: "", genre: ["kpop"] },
-      { artist: "강승윤", title: "본능적으로", inst: "https://youtu.be/o-AdVhhRSlc", key: "+4", note: "", genre: ["kpop"] },
+      { artist: "강승윤", title: "본능적으로", inst: "https://youtu.be/o-AdVhhRSlc", key: "+4", note: "원곡:윤종신", genre: ["kpop"] },
       { artist: "강아윤", title: "끝났다는 것은 다시 시작된다는 것을", inst: "https://youtu.be/LtKvHQAnb5I", key: "0", note: "", genre: ["kpop"] },
 
 ];
