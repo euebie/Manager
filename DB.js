@@ -15,5 +15,7 @@ const songs = [
       { artist: "강승윤", title: "본능적으로", inst: "https://youtu.be/o-AdVhhRSlc", key: "+4", note: "원곡:윤종신", genre: ["kpop"] },
       { artist: "강아윤", title: "끝났다는 것은 다시 시작된다는 것을", inst: "https://youtu.be/LtKvHQAnb5I", key: "0", note: "", genre: ["kpop"] },
       { artist: "강인원, 권인하, 김현식", title: "비오는 날의 수채화", inst: "https://youtu.be/fbW1A1uGQ4M", key: "+6", note: "", genre: ["kpop"] },
+      { artist: "강지(GangZi)", title: "봄으로 남아줄래?", inst: "", key: "0", note: "", genre: ["kpop"] },
+      { artist: "강현수(브이원(V.One))", title: "그런가봐요", inst: "", key: "+6", note: "", genre: ["kpop"] },
 
 ];
