@@ -471,7 +471,7 @@
             <th>#</th>
             <th>가수</th>
             <th>제목</th>
-            <th>장르</th>
+            <th>인스</th>
             <th>비고</th>
           </tr>
         </thead>
@@ -542,28 +542,27 @@
 
   function renderTable(list) {
     tbody.innerHTML = "";
-
+    
     if (!list.length) {
       emptyState.classList.remove("hidden");
+      
       return;
-    } else {
+    
+    } else { 
       emptyState.classList.add("hidden");
     }
-
+    
     list.forEach((song, index) => {
       const tr = document.createElement("tr");
-
-      const genreTags = (song.genre || [])
-        .map((g) => `<span class="${genreTagClass(g)}">${genreLabel(g)}</span>`)
-        .join(" ");
-      
+        
       tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${song.artist}</td>
-        <td>${song.title}</td>
-        <td>${genreTags}</td>
-        <td>${song.note || ""}</td>
+      <td>${index + 1}</td>
+      <td>${song.artist}</td>
+      <td>${song.title}</td>
+      <td>${song.inst || ""}</td>
+      <td>${song.note || ""}</td>
       `;
+      
       tbody.appendChild(tr);
     });
   }
