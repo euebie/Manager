@@ -494,13 +494,6 @@ function getFilteredSongs() {
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
 
-  const savedTheme = localStorage.getItem("euebie-theme");
-  if (savedTheme) {
-    applyTheme(savedTheme);
-  } else {
-    applyTheme("light");
-  }
-
   // 최초 렌더
   renderTable(songs);
   updateSongCount(songs.length);
