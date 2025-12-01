@@ -504,33 +504,6 @@
     randomBox.classList.add("hidden");
     randomText.textContent = "";
   }
-    
-  // 장르 라벨 / 태그 클래스 매핑
-  const GENRE_LABEL = {
-    kpop: "한국",
-    jpop: "일본",
-    pop: "미국",
-    ani: "만화",
-    pay: "유료",
-    etc: "기타",
-  };
-
-  const GENRE_CLASS = {
-    kpop: "tag tag-kpop",
-    jpop: "tag tag-jpop",
-    pop: "tag tag-pop",
-    ani: "tag tag-ani",
-    pay: "tag tag-pay",
-    etc: "tag tag-etc",
-  };
-
-  function genreLabel(code) {
-    return GENRE_LABEL[code] || code;
-  }
-
-  function genreTagClass(code) {
-    return GENRE_CLASS[code] || "tag tag-etc";
-  }
 
   function updateSongCount(filteredCount) {
     const totalCount = songs.length; // 전체 곡 수
