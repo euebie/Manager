@@ -69,20 +69,6 @@
     font-size: 1rem; /* 총 곡수 / 필터링 된 곡수 */
     margin-top: 4px;
   }
-
-  .theme-toggle {
-    align-self: flex-start;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid #d1d5db;
-    background: #f9fafb;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-
-  .theme-toggle:hover {
-    opacity: 0.9;
-  }
   
   .controls {
     display: flex;
@@ -234,6 +220,94 @@
     animation: popFade 0.28s ease-out;
   }
 
+/* ===== 다크 모드 ===== */
+  body[data-theme="dark"] {
+    background: #111827;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .app {
+    background: transparent;
+  }
+
+  body[data-theme="dark"] header h1 {
+    color: #f9fafb;
+  }
+
+  body[data-theme="dark"] header p,
+  body[data-theme="dark"] .footer-note {
+    color: #9ca3af;
+  }
+
+  body[data-theme="dark"] .controls input,
+  body[data-theme="dark"] .controls select {
+    background: #020617;
+    border-color: #4b5563;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .controls input::placeholder {
+    color: #6b7280;
+  }
+
+  body[data-theme="dark"] .controls button {
+    background: #1f2937;
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+  }
+
+  body[data-theme="dark"] .random-result {
+    background: #020617;
+    border-color: #1f2937;
+    color: #e5e7eb;
+  }
+
+  body[data-theme="dark"] .random-title {
+    color: #9ca3af;
+  }
+
+  body[data-theme="dark"] .table-wrapper {
+    background: #020617;
+    border-color: #1f2937;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.8);
+  }
+
+  body[data-theme="dark"] table {
+    font-size: 0.9rem;
+  }
+
+  body[data-theme="dark"] thead {
+    background: #1e293b;
+    color: #f8fafc;
+    font-weight: 700;
+    border-bottom: 2px solid #64748b;
+  }
+
+  body[data-theme="dark"] th {
+    color: #f8fafc !important;
+  }
+
+  body[data-theme="dark"] td {
+    border-bottom-color: #1f2937;
+  }
+
+  body[data-theme="dark"] tbody tr:nth-child(odd) {
+    background: #020617;
+  }
+
+  body[data-theme="dark"] tbody tr:nth-child(even) {
+    background: #050816;
+  }
+
+  body[data-theme="dark"] tbody tr:hover {
+    background: #0f172a;
+  }
+
+  body[data-theme="dark"] .empty-state {
+    color: #9ca3af;
+    background: transparent;
+  }
+  
   /* 링크 스타일 */
   .inst-link {
     text-decoration: none;
@@ -257,16 +331,8 @@
           <h1>2025.12.01(656화) Ver.</h1>
           <p id="songCount"></p>
         </div>
-        <button
-          id="themeToggle"
-          class="theme-toggle"
-          type="button"
-        >
-          🌙 다크 모드
-        </button>
       </div>
     </header>
-
 
     <section class="controls">
       <input
