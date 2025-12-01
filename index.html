@@ -390,7 +390,6 @@
   const randomText = document.getElementById("randomText");
   const songCountEl = document.getElementById("songCount");
   const emptyState = document.getElementById("emptyState");
-  const themeToggle = document.getElementById("themeToggle");
   const bodyEl = document.body;
 
   // 랜덤 박스 초기화
@@ -494,17 +493,6 @@ function getFilteredSongs() {
     randomBox.classList.remove("hidden");
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
-
-  // 다크 모드
-  function applyTheme(theme) {
-    if (theme === "dark") {
-      bodyEl.setAttribute("data-theme", "dark");
-      themeToggle.textContent = "☀️ 라이트 모드";
-    } else {
-      bodyEl.removeAttribute("data-theme");
-      themeToggle.textContent = "🌙 다크 모드";
-    }
-  }
 
   const savedTheme = localStorage.getItem("euebie-theme");
   if (savedTheme) {
