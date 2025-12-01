@@ -369,54 +369,6 @@
     color: #ede9fe;
   }
 
-  /* ===== 반응형 (모바일) ===== */
-  @media (max-width: 640px) {
-    .app {
-      padding: 12px 10px;
-    }
-
-    .controls {
-      align-items: center;
-      gap: 8px;
-    }
-
-    .controls input {
-      flex: 0 0 68%;
-      font-size: 0.9rem;
-    }
-
-    .controls select {
-      flex: 0 0 30%;
-      font-size: 0.9rem;
-    }
-
-    .controls button {
-      flex: 0 0 100%;
-      font-size: 0.9rem;
-    }
-
-    table {
-      width: 100%;
-      font-size: 0.85rem;
-    }
-
-    /* 1번(#), 4번(장르), 5번(비고) 컬럼 숨기기 */
-    th:nth-child(1),
-    td:nth-child(1),
-    th:nth-child(4),
-    td:nth-child(4),
-    th:nth-child(5),
-    td:nth-child(5) {
-      display: none;
-    }
-
-    th:nth-child(2),
-    td:nth-child(2),
-    th:nth-child(3),
-    td:nth-child(3) {
-      white-space: normal;
-    }
-  }
 </style>
 
 </head>
@@ -484,7 +436,7 @@
     </section>
   </div>
 
-  <script src="songs.js"></script>
+  <script src="DB.js"></script>
   
   <script>
     
