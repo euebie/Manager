@@ -4,468 +4,524 @@
   <meta charset="UTF-8" />
   <title>Euebie Manager DB</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-<style>
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #111827;
-    color: #e5e7eb;
-  }
-
-  .app {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 16px 16px 40px;
-  }
-
-  header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  header h1 {
-    margin: 0;
-  }
-
-  header p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #475569;
-  }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .header-titles {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  /* 헤더 타이틀 크기 조정 */
-  header .header-titles h1:nth-child(1) {
-    font-size: 1.6rem; /* 타이틀 */
-    font-weight: 700;
-  }
-
-  header .header-titles h1:nth-child(2) {
-    font-size: 1.2rem; /* Ver. */
-    font-weight: 600;
-    opacity: 0.7;
-  }
-
-  header .header-titles p#songCount {
-    font-size: 1rem; /* 총 곡수 / 필터링 된 곡수 */
-    margin-top: 4px;
-  }
-  
-  .controls {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .controls input,
-  .controls select,
-  .controls button {
-    padding: 8px 10px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    font-size: 0.9rem;
-  }
-
-  .controls input {
-    flex: 1 1 160px;
-    background: #ffffff;
-    color: #1e293b;
-  }
-
-  .controls input::placeholder {
-    color: #64748b;
-  }
-
-  .controls select {
-    flex: 0 0 130px;
-    background: #ffffff;
-    color: #1e293b;
-  }
-
-  .controls button {
-    flex: 0 0 auto;
-    cursor: pointer;
-    background: #111827;
-    color: #ffffff;
-    font-weight: 500;
-    border: 1px solid #cbd5e1;
-    transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
-  }
-
-  .controls button:hover {
-    opacity: 0.9;
-  }
-
-  .controls button:active {
-    transform: translateY(1px);
-    box-shadow: none;
-  }
-
-  .random-result {
-    margin-bottom: 12px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    font-size: 0.9rem;
-  }
-
-  .random-title {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 4px;
-  }
-
-  .random-main {
-    font-weight: 600;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  .table-wrapper {
-    background: #f8fafc;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
-    border: 1px solid #d1d5db;
-    overflow: hidden;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.85rem;
-  }
-
-  thead {
-    background: #e2e8f0;
-    color: #1e293b;
-  }
-
-  th,
-  td {
-    padding: 8px 10px;
-    border-bottom: 1px solid #f1f5f9;
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  th:nth-child(3),
-  td:nth-child(3) {
-    white-space: normal;
-  }
-
-  tbody tr:nth-child(odd) {
-    background: #ffffff;
-  }
-
-  tbody tr:nth-child(even) {
-    background: #f3f4f6;
-  }
-
-  tbody tr:hover {
-    background: #e0e7ff;
-  }
-
-  .empty-state {
-    padding: 24px 16px;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #6b7280;
-  }
-
-  .footer-note {
-    margin-top: 12px;
-    font-size: 0.75rem;
-    color: #9ca3af;
-  }
-
-  /* 랜덤 추천 애니메이션 */
-  @keyframes popFade {
-    0% {
-      transform: scale(0.8);
-      opacity: 0;
+  <style>
+    * {
+      box-sizing: border-box;
     }
-    60% {
-      transform: scale(1.05);
-      opacity: 1;
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111827;
+      color: #e5e7eb;
     }
-    100% {
-      transform: scale(1);
+
+    .app {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 16px 40px;
     }
-  }
-  
-  .random-text.show {
-    animation: popFade 0.28s ease-out;
-  }
 
-  /* ===== 다크 모드 ===== */
-  body[data-theme="dark"] {
-    background: #111827;
-    color: #e5e7eb;
-  }
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
 
-  body[data-theme="dark"] .app {
-    background: transparent;
-  }
+    header h1 {
+      margin: 0;
+    }
 
-  body[data-theme="dark"] header h1 {
-    color: #f9fafb;
-  }
+    header p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #475569;
+    }
 
-  body[data-theme="dark"] header p,
-  body[data-theme="dark"] .footer-note {
-    color: #9ca3af;
-  }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-  body[data-theme="dark"] .controls input,
-  body[data-theme="dark"] .controls select {
-    background: #020617;
-    border-color: #4b5563;
-    color: #e5e7eb;
-  }
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
 
-  body[data-theme="dark"] .controls input::placeholder {
-    color: #6b7280;
-  }
+    /* 헤더 타이틀 크기 조정 */
+    header .header-titles h1:nth-child(1) {
+      font-size: 1.6rem; /* 타이틀 */
+      font-weight: 700;
+    }
 
-  body[data-theme="dark"] .controls button {
-    background: #1f2937;
-    color: #e5e7eb;
-    border: 1px solid #4b5563;
-  }
+    header .header-titles h1:nth-child(2) {
+      font-size: 1.2rem; /* Ver. */
+      font-weight: 600;
+      opacity: 0.7;
+    }
 
-  body[data-theme="dark"] .random-result {
-    background: #020617;
-    border-color: #1f2937;
-    color: #e5e7eb;
-  }
+    header .header-titles p#songCount {
+      font-size: 1rem; /* 총 곡수 / 필터링 된 곡수 */
+      margin-top: 4px;
+    }
 
-  body[data-theme="dark"] .random-title {
-    color: #9ca3af;
-  }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
 
-  body[data-theme="dark"] .table-wrapper {
-    background: #020617;
-    border-color: #1f2937;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.8);
-  }
+    .controls input,
+    .controls select,
+    .controls button {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.9rem;
+    }
 
-  body[data-theme="dark"] table {
-    font-size: 0.9rem;
-  }
+    .controls input {
+      flex: 1 1 160px;
+      background: #ffffff;
+      color: #1e293b;
+    }
 
-  body[data-theme="dark"] thead {
-    background: #1e293b;
-    color: #f8fafc;
-    font-weight: 700;
-    border-bottom: 2px solid #64748b;
-  }
+    .controls input::placeholder {
+      color: #64748b;
+    }
 
-  body[data-theme="dark"] th {
-    color: #f8fafc !important;
-  }
+    .controls select {
+      flex: 0 0 130px;
+      background: #ffffff;
+      color: #1e293b;
+    }
 
-  body[data-theme="dark"] td {
-    border-bottom-color: #1f2937;
-  }
+    .controls button {
+      flex: 0 0 auto;
+      cursor: pointer;
+      background: #111827;
+      color: #ffffff;
+      font-weight: 500;
+      border: 1px solid #cbd5e1;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, opacity 0.1s ease;
+    }
 
-  body[data-theme="dark"] tbody tr:nth-child(odd) {
-    background: #020617;
-  }
+    .controls button:hover {
+      opacity: 0.9;
+    }
 
-  body[data-theme="dark"] tbody tr:nth-child(even) {
-    background: #050816;
-  }
+    .controls button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
 
-  body[data-theme="dark"] tbody tr:hover {
-    background: #0f172a;
-  }
+    .random-result {
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      font-size: 0.9rem;
+    }
 
-  body[data-theme="dark"] .empty-state {
-    color: #9ca3af;
-    background: transparent;
-  }
+    .random-title {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
 
-  /* 링크 스타일 */
-  .inst-link {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-  }
+    .random-main {
+      font-weight: 600;
+    }
 
-  .inst-link:hover {
-    opacity: 0.7;
-  }
-  
-<script>
-  let songs = [];
+    .hidden {
+      display: none;
+    }
 
-  const SHEET_JSON_URL = 'https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec';
+    .table-wrapper {
+      background: #f8fafc;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+      border: 1px solid #d1d5db;
+      overflow: hidden;
+    }
 
-  const tbody = document.getElementById("songTbody");
-  const searchInput = document.getElementById("searchInput");
-  const genreFilter = document.getElementById("genreFilter");
-  const randomBtn = document.getElementById("randomBtn");
-  const randomBox = document.getElementById("randomBox");
-  const randomText = document.getElementById("randomText");
-  const songCountEl = document.getElementById("songCount");
-  const emptyState = document.getElementById("emptyState");
-  const bodyEl = document.body;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
 
-  // ===== 랜덤 박스 초기화 =====
-  function resetRandomBox() {
-    randomBox.classList.add("hidden");
-    randomText.textContent = "";
-  }
+    thead {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
 
-  // ===== 곡 개수 표시 =====
-  function updateSongCount(filteredCount) {
-    const totalCount = songs.length;
-    songCountEl.textContent =
-      `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
-  }
+    th,
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: left;
+      white-space: nowrap;
+    }
 
-  // ===== 구글 시트에서 JSON 로드 =====
-  async function loadSongsFromSheet() {
-    try {
-      // 1) 시트 JSON 불러오기
-      const res = await fetch(SHEET_JSON_URL);
-      if (!res.ok) {
-        throw new Error('시트 요청 실패: ' + res.status);
+    th:nth-child(3),
+    td:nth-child(3) {
+      white-space: normal;
+    }
+
+    tbody tr:nth-child(odd) {
+      background: #ffffff;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f3f4f6;
+    }
+
+    tbody tr:hover {
+      background: #e0e7ff;
+    }
+
+    .empty-state {
+      padding: 24px 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    /* 랜덤 추천 애니메이션 */
+    @keyframes popFade {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .random-text.show {
+      animation: popFade 0.28s ease-out;
+    }
+
+    /* ===== 다크 모드 ===== */
+    body[data-theme="dark"] {
+      background: #111827;
+      color: #e5e7eb;
+    }
+
+    body[data-theme="dark"] .app {
+      background: transparent;
+    }
+
+    body[data-theme="dark"] header h1 {
+      color: #f9fafb;
+    }
+
+    body[data-theme="dark"] header p,
+    body[data-theme="dark"] .footer-note {
+      color: #9ca3af;
+    }
+
+    body[data-theme="dark"] .controls input,
+    body[data-theme="dark"] .controls select {
+      background: #020617;
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    body[data-theme="dark"] .controls input::placeholder {
+      color: #6b7280;
+    }
+
+    body[data-theme="dark"] .controls button {
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+    }
+
+    body[data-theme="dark"] .random-result {
+      background: #020617;
+      border-color: #1f2937;
+      color: #e5e7eb;
+    }
+
+    body[data-theme="dark"] .random-title {
+      color: #9ca3af;
+    }
+
+    body[data-theme="dark"] .table-wrapper {
+      background: #020617;
+      border-color: #1f2937;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.8);
+    }
+
+    body[data-theme="dark"] table {
+      font-size: 0.9rem;
+    }
+
+    body[data-theme="dark"] thead {
+      background: #1e293b;
+      color: #f8fafc;
+      font-weight: 700;
+      border-bottom: 2px solid #64748b;
+    }
+
+    body[data-theme="dark"] th {
+      color: #f8fafc !important;
+    }
+
+    body[data-theme="dark"] td {
+      border-bottom-color: #1f2937;
+    }
+
+    body[data-theme="dark"] tbody tr:nth-child(odd) {
+      background: #020617;
+    }
+
+    body[data-theme="dark"] tbody tr:nth-child(even) {
+      background: #050816;
+    }
+
+    body[data-theme="dark"] tbody tr:hover {
+      background: #0f172a;
+    }
+
+    body[data-theme="dark"] .empty-state {
+      color: #9ca3af;
+      background: transparent;
+    }
+
+    /* 링크 스타일 */
+    .inst-link {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .inst-link:hover {
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body data-theme="dark">
+  <div class="app">
+    <header>
+      <div class="header-top">
+        <div class="header-titles">
+          <h1>으비이 매니저 DB</h1>
+          <h1>2025.12.01(656화) Ver.</h1>
+          <p id="songCount"></p>
+        </div>
+      </div>
+    </header>
+
+    <section class="controls">
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="가수 또는 제목 검색(띄어 쓰기 상관 없이 가능)"
+      />
+
+      <select id="genreFilter">
+        <option value="all">전체</option>
+        <option value="kpop">한국</option>
+        <option value="jpop">일본</option>
+        <option value="pop">미국</option>
+        <option value="ani">만화</option>
+        <option value="pay">유료</option>
+        <option value="etc">기타</option>
+      </select>
+      <button id="randomBtn">랜덤 노래 🎲</button>
+    </section>
+
+    <section id="randomBox" class="random-result hidden">
+      <div class="random-title">오늘의 랜덤 추천</div>
+      <div class="random-main" id="randomText"></div>
+    </section>
+
+    <section class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>가수</th>
+            <th>제목</th>
+            <th>MR</th>
+            <th>키</th>
+            <th>정보</th>
+          </tr>
+        </thead>
+        <tbody id="songTbody"></tbody>
+      </table>
+      <div id="emptyState" class="empty-state hidden">
+        조건에 맞는 노래가 없습니다 🥲
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let songs = [];
+
+    const SHEET_JSON_URL = 'https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec';
+
+    const tbody = document.getElementById("songTbody");
+    const searchInput = document.getElementById("searchInput");
+    const genreFilter = document.getElementById("genreFilter");
+    const randomBtn = document.getElementById("randomBtn");
+    const randomBox = document.getElementById("randomBox");
+    const randomText = document.getElementById("randomText");
+    const songCountEl = document.getElementById("songCount");
+    const emptyState = document.getElementById("emptyState");
+
+    // ===== 랜덤 박스 초기화 =====
+    function resetRandomBox() {
+      randomBox.classList.add("hidden");
+      randomText.textContent = "";
+    }
+
+    // ===== 곡 개수 표시 =====
+    function updateSongCount(filteredCount) {
+      const totalCount = songs.length;
+      songCountEl.textContent =
+        `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
+    }
+
+    // ===== 구글 시트에서 JSON 로드 =====
+    async function loadSongsFromSheet() {
+      try {
+        const res = await fetch(SHEET_JSON_URL);
+        if (!res.ok) {
+          throw new Error('시트 요청 실패: ' + res.status);
+        }
+
+        const raw = await res.json();
+        console.log('sheet raw:', raw);
+
+        const data = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
+
+        songs = data.map((row) => ({
+          artist: row.artist || '',
+          title : row.title  || '',
+          inst  : row.inst   || '',
+          key   : row.key    || '',
+          note  : row.note   || '',
+          genre : typeof row.genre === 'string'
+            ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
+            : (row.genre || [])
+        }));
+
+        updateTable();
+      } catch (err) {
+        console.error(err);
+        emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
+        emptyState.classList.remove('hidden');
+      }
+    }
+
+    // ===== 테이블 렌더링 =====
+    function renderTable(list) {
+      tbody.innerHTML = "";
+
+      if (!list.length) {
+        emptyState.classList.remove("hidden");
+        return;
+      } else {
+        emptyState.classList.add("hidden");
       }
 
-      const data = await res.json();
-      console.log('sheet data:', data); // 👀 한번 확인용
+      list.forEach((song, index) => {
+        const tr = document.createElement("tr");
 
-      // 2) 받아온 데이터를 songs 배열 형태로 변환
-      songs = data.map((row) => ({
-        artist: row.artist || '',
-        title : row.title  || '',
-        inst  : row.inst   || '',
-        key   : row.key    || '',
-        note  : row.note   || '',
-        genre : typeof row.genre === 'string'
-          ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
-          : (row.genre || [])
-      }));
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${song.artist}</td>
+          <td>${song.title}</td>
+          <td>${song.inst ? `<a href="${song.inst}" target="_blank" class="inst-link">🎧</a>` : ""}</td>
+          <td>${song.key || ""}</td>
+          <td>${song.note || ""}</td>
+        `;
 
-      // 3) 화면 업데이트
-      updateTable();
-    } catch (err) {
-      console.error(err);
-      emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
-      emptyState.classList.remove('hidden');
-    }
-  }
-
-  // ===== 테이블 렌더링 =====
-  function renderTable(list) {
-    tbody.innerHTML = "";
-
-    if (!list.length) {
-      emptyState.classList.remove("hidden");
-      return;
-    } else {
-      emptyState.classList.add("hidden");
+        tbody.appendChild(tr);
+      });
     }
 
-    list.forEach((song, index) => {
-      const tr = document.createElement("tr");
+    // ===== 검색/필터 =====
+    function normalize(str) {
+      return (str || "")
+        .toLowerCase()
+        .replace(/\s+/g, "");
+    }
 
-      tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${song.artist}</td>
-        <td>${song.title}</td>
-        <td>${song.inst ? `<a href="${song.inst}" target="_blank" class="inst-link">🎧</a>` : ""}</td>
-        <td>${song.key || ""}</td>
-        <td>${song.note || ""}</td>
-      `;
+    function getFilteredSongs() {
+      const keyword = normalize(searchInput.value);
+      const filterGenre = genreFilter.value;
 
-      tbody.appendChild(tr);
-    });
-  }
+      return songs.filter((song) => {
+        const title = normalize(song.title);
+        const artist = normalize(song.artist);
+        const combined = normalize(`${song.artist || ""} ${song.title || ""}`);
 
-  // ===== 검색/필터 =====
-  function normalize(str) {
-    return (str || "")
-      .toLowerCase()
-      .replace(/\s+/g, "");
-  }
+        const matchKeyword =
+          !keyword ||
+          title.includes(keyword) ||
+          artist.includes(keyword) ||
+          combined.includes(keyword);
 
-  function getFilteredSongs() {
-    const keyword = normalize(searchInput.value);
-    const filterGenre = genreFilter.value;
+        const matchGenre =
+          filterGenre === "all" || (song.genre || []).includes(filterGenre);
 
-    return songs.filter((song) => {
-      const title = normalize(song.title);
-      const artist = normalize(song.artist);
-      const combined = normalize(`${song.artist || ""} ${song.title || ""}`);
+        return matchKeyword && matchGenre;
+      });
+    }
 
-      const matchKeyword =
-        !keyword ||
-        title.includes(keyword) ||
-        artist.includes(keyword) ||
-        combined.includes(keyword);
+    function updateTable() {
+      const filtered = getFilteredSongs();
+      renderTable(filtered);
+      updateSongCount(filtered.length);
+      resetRandomBox();
+    }
 
-      const matchGenre =
-        filterGenre === "all" || (song.genre || []).includes(filterGenre);
+    // ===== 이벤트 바인딩 =====
+    searchInput.addEventListener("input", updateTable);
+    genreFilter.addEventListener("change", updateTable);
 
-      return matchKeyword && matchGenre;
-    });
-  }
+    randomBtn.addEventListener("click", () => {
+      const filtered = getFilteredSongs();
 
-  function updateTable() {
-    const filtered = getFilteredSongs();
-    renderTable(filtered);
-    updateSongCount(filtered.length);
-    resetRandomBox();
-  }
+      if (!filtered.length) {
+        randomBox.classList.remove("hidden");
+        randomText.textContent = "현재 필터 조건에 맞는 노래가 없어요 🥲";
+        return;
+      }
 
-  // ===== 이벤트 바인딩 =====
-  searchInput.addEventListener("input", updateTable);
-  genreFilter.addEventListener("change", updateTable);
+      const idx = Math.floor(Math.random() * filtered.length);
+      const pick = filtered[idx];
 
-  randomBtn.addEventListener("click", () => {
-    const filtered = getFilteredSongs();
-
-    if (!filtered.length) {
       randomBox.classList.remove("hidden");
-      randomText.textContent = "현재 필터 조건에 맞는 노래가 없어요 🥲";
-      return;
-    }
+      randomText.textContent = `${pick.artist} - ${pick.title}`;
+    });
 
-    const idx = Math.floor(Math.random() * filtered.length);
-    const pick = filtered[idx];
-
-    randomBox.classList.remove("hidden");
-    randomText.textContent = `${pick.artist} - ${pick.title}`;
-  });
-
-  // ✅ 페이지 로드 시 곡 목록 불러오기
-  document.addEventListener("DOMContentLoaded", loadSongsFromSheet);
-      
-</script>
+    // ✅ 페이지 로드되면 바로 시트에서 곡 목록 불러오기
+    loadSongsFromSheet();
+    
+  </script>
 </body>
 </html>
