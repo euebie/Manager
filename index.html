@@ -475,39 +475,16 @@ function renderTable(list) {
 
   list.forEach((song, index) => {
     const tr = document.createElement("tr");
-
-    const tdIndex = document.createElement("td");
-    tdIndex.textContent = index + 1;
-
-    const tdArtist = document.createElement("td");
-    tdArtist.textContent = song.artist;
-
-    const tdTitle = document.createElement("td");
-    tdTitle.textContent = song.title;
-
-    const tdInst = document.createElement("td");
-    if (song.inst) {
-      const a = document.createElement("a");
-      a.href = song.inst;
-      a.target = "_blank";
-      a.className = "inst-link";
-      a.textContent = "🎧";
-      tdInst.appendChild(a);
-    }
-
-    const tdKey = document.createElement("td");
-    tdKey.textContent = song.key || "";
-
-    const tdNote = document.createElement("td");
-    tdNote.textContent = song.note || "";
-
-    tr.appendChild(tdIndex);
-    tr.appendChild(tdArtist);
-    tr.appendChild(tdTitle);
-    tr.appendChild(tdInst);
-    tr.appendChild(tdKey);
-    tr.appendChild(tdNote);
-
+      
+    tr.innerHTML = `
+    <td>${index + 1}</td>
+    <td>${song.artist}</td>
+    <td>${song.title}</td>
+    <td>${song.inst ? `<a href="${song.inst}" target="_blank" class="inst-link">🎧</a>` : ""}</td>
+    <td>${song.key || ""}</td>
+    <td>${song.note || ""}</td>
+    `;
+    
     tbody.appendChild(tr);
   });
 }
