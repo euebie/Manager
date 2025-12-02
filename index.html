@@ -539,15 +539,21 @@
     });
 
     // ===== 초기 실행 =====
-    async function init() {
+    function init() {
       console.log("[init] start");
-      await loadSongsFromSheet();
-      console.log("[init] loaded songs:", songs.length);
-      updateTable();
-      console.log("[init] done");
+      loadSongsFromSheet()
+        .then(() => {
+          console.log("[init] loaded songs:", songs.length);
+          updateTable();
+          console.log("[init] done");
+        })
+        .catch((err) => {
+          console.error("[init] ERROR]", err);
+        });
     }
 
     init();
+    
   </script>
 </body>
 </html>
