@@ -319,67 +319,7 @@
     opacity: 0.7;
   }
   
-</style>
-
-</head>
-<body data-theme="dark">
-  <div class="app">
-    <header>
-      <div class="header-top">
-        <div class="header-titles">
-          <h1>으비이 매니저 DB</h1>
-          <h1>2025.12.01(656화) Ver.</h1>
-          <p id="songCount"></p>
-        </div>
-      </div>
-    </header>
-
-    <section class="controls">
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="가수 또는 제목 검색(띄어 쓰기 상관 없이 가능)"
-      />
-
-      <select id="genreFilter">
-        <option value="all">전체</option>
-        <option value="kpop">한국</option>
-        <option value="jpop">일본</option>
-        <option value="pop">미국</option>
-        <option value="ani">만화</option>
-        <option value="pay">유료</option>
-        <option value="etc">기타</option>
-      </select>
-      <button id="randomBtn">랜덤 노래 🎲</button>
-    </section>
-
-    <section id="randomBox" class="random-result hidden">
-      <div class="random-title">오늘의 랜덤 추천</div>
-      <div class="random-main" id="randomText"></div>
-    </section>
-
-    <section class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>가수</th>
-            <th>제목</th>
-            <th>MR</th>
-            <th>키</th>
-            <th>정보</th>
-          </tr>
-        </thead>
-        <tbody id="songTbody">
-        </tbody>
-      </table>
-      <div id="emptyState" class="empty-state hidden">
-        조건에 맞는 노래가 없습니다 🥲
-      </div>
-    </section>
-  </div>
-
-  <script>
+<script>
   let songs = [];
 
   const SHEET_JSON_URL = 'https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec';
@@ -410,35 +350,36 @@
   // ===== 구글 시트에서 JSON 로드 =====
   async function loadSongsFromSheet() {
     try {
-    // 1) 시트 JSON 불러오기
-    const res = await fetch(SHEET_JSON_URL);
-    if (!res.ok) {
-      throw new Error('시트 요청 실패: ' + res.status);
+      // 1) 시트 JSON 불러오기
+      const res = await fetch(SHEET_JSON_URL);
+      if (!res.ok) {
+        throw new Error('시트 요청 실패: ' + res.status);
+      }
+
+      const data = await res.json();
+      console.log('sheet data:', data); // 👀 한번 확인용
+
+      // 2) 받아온 데이터를 songs 배열 형태로 변환
+      songs = data.map((row) => ({
+        artist: row.artist || '',
+        title : row.title  || '',
+        inst  : row.inst   || '',
+        key   : row.key    || '',
+        note  : row.note   || '',
+        genre : typeof row.genre === 'string'
+          ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
+          : (row.genre || [])
+      }));
+
+      // 3) 화면 업데이트
+      updateTable();
+    } catch (err) {
+      console.error(err);
+      emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
+      emptyState.classList.remove('hidden');
     }
-
-    const data = await res.json();
-
-    // 2) 받아온 데이터를 songs 배열 형태로 변환
-    songs = data.map((row) => ({
-      artist: row.artist || '',
-      title : row.title  || '',
-      inst  : row.inst   || '',
-      key   : row.key    || '',
-      note  : row.note   || '',
-      genre : typeof row.genre === 'string'
-        ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
-        : (row.genre || [])
-    }));
-
-    // 3) 화면 업데이트
-    updateTable();
-  } catch (err) {
-    console.error(err);
-    emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
-    emptyState.classList.remove('hidden');
   }
-}
-    
+
   // ===== 테이블 렌더링 =====
   function renderTable(list) {
     tbody.innerHTML = "";
@@ -515,8 +456,6 @@
       return;
     }
 
-    document.addEventListener("DOMContentLoaded", loadSongsFromSheet);
-
     const idx = Math.floor(Math.random() * filtered.length);
     const pick = filtered[idx];
 
@@ -524,6 +463,9 @@
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
 
+  // ✅ 페이지 로드 시 곡 목록 불러오기
+  document.addEventListener("DOMContentLoaded", loadSongsFromSheet);
+      
 </script>
 </body>
 </html>
