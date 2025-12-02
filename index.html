@@ -380,7 +380,6 @@
   </div>
 
   <script>
-  // ===== 전역 상태 =====
   let songs = [];
 
   const tbody = document.getElementById("songTbody");
@@ -392,40 +391,6 @@
   const songCountEl = document.getElementById("songCount");
   const emptyState = document.getElementById("emptyState");
   const bodyEl = document.body;
-
-  // ===== Apps Script 웹앱 URL =====
-  // 배포 후 복사한 URL로 바꿔주세요!
-  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec";
-
-  // ===== Apps Script에서 JSON 데이터 로드 =====
-  async function loadSongsFromAPI() {
-    try {
-      const res = await fetch(APP_SCRIPT_URL, {
-        method: "GET",
-      });
-
-      console.log("[API status]", res.status, res.statusText);
-
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("[API error body]", text);
-        throw new Error("API 응답 에러: " + res.status);
-      }
-
-      const data = await res.json();
-
-      // Apps Script에서 { songs: [...], total: n } 형태로 내려줌
-      songs = data.songs || [];
-      console.log("[Songs loaded]", songs.length);
-    } catch (err) {
-      console.error("[loadSongsFromAPI ERROR]", err);
-      alert(
-        "노래 데이터를 불러오는데 실패했어요 😭\n" +
-          (err.message || "브라우저 콘솔을 확인해 주세요.")
-      );
-      songs = [];
-    }
-  }
 
   // ===== 랜덤 박스 초기화 =====
   function resetRandomBox() {
@@ -523,21 +488,6 @@
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
 
-  // ===== 초기 실행 =====
-  function init() {
-    console.log("[init] start");
-    loadSongsFromAPI()
-      .then(() => {
-        console.log("[init] loaded songs:", songs.length);
-        updateTable();
-        console.log("[init] done");
-      })
-      .catch((err) => {
-        console.error("[init] ERROR]", err);
-      });
-  }
-
-  init();
 </script>
 </body>
 </html>
