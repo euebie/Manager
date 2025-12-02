@@ -392,6 +392,57 @@
   const emptyState = document.getElementById("emptyState");
   const bodyEl = document.body;
 
+  // ✅ 구글 시트 설정
+  const SHEET_ID = "1dtfPdSWGT6Jdb4J3ZRasu971TCtVNeUgEV_ehu8Q99-5hQ7rhNuQMegM";
+  const API_KEY = "AIzaSyCK1AGp04IwVP2QTRxhDDnGXEa85jP7WuU";
+  const SHEET_NAME = "리스트";
+  
+  // ✅ 3행~3000행 / A열~F열만 읽기
+  const RANGE = `${SHEET_NAME}!A3:F3000`;
+
+  async function loadSongsFromSheet() {
+    const url =
+      `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
+      `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error("Google Sheets API 에러: " + res.status);
+      }
+
+      const data = await res.json();
+      const rows = data.values || [];
+
+      songs = rows.map((row, idx) => {
+        const artist = row[0] || "";
+        const title  = row[1] || "";
+        const inst   = row[2] || "";
+        const key    = row[3] || "";
+        const note   = row[4] || "";
+        const genreRaw = row[5] || "";
+
+        const genre = genreRaw
+          ? genreRaw.split(",").map((g) => g.trim()).filter(Boolean)
+          : [];
+
+        return {
+          artist,
+          title,
+          inst,
+          key,
+          note,
+          genre,
+        };
+      });
+
+    } catch (err) {
+      console.error(err);
+      alert("구글 시트에서 데이터를 불러오는데 실패했어요 😭\n콘솔을 확인해 주세요.");
+      songs = [];
+    }
+  }
+
   // 랜덤 박스 초기화
   function resetRandomBox() {
     randomBox.classList.add("hidden");
