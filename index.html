@@ -405,43 +405,49 @@
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
       `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
-    try {
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error("Google Sheets API 에러: " + res.status);
-      }
+ async function loadSongsFromSheet() {
+  const url =
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
+    `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
-      const data = await res.json();
-      const rows = data.values || [];
+  try {
+    const res = await fetch(url);
 
-      songs = rows.map((row, idx) => {
-        const artist = row[0] || "";
-        const title  = row[1] || "";
-        const inst   = row[2] || "";
-        const key    = row[3] || "";
-        const note   = row[4] || "";
-        const genreRaw = row[5] || "";
+    // 🔍 응답 전체 로그
+    console.log("[Sheets fetch URL]", url);
+    console.log("[Sheets status]", res.status, res.statusText);
 
-        const genre = genreRaw
-          ? genreRaw.split(",").map((g) => g.trim()).filter(Boolean)
-          : [];
+    const text = await res.text();   // 일단 텍스트로 전체 받아보기
+    console.log("[Sheets raw response]", text);
 
-        return {
-          artist,
-          title,
-          inst,
-          key,
-          note,
-          genre,
-        };
-      });
-
-    } catch (err) {
-      console.error(err);
-      alert("구글 시트에서 데이터를 불러오는데 실패했어요 😭\n콘솔을 확인해 주세요.");
-      songs = [];
+    if (!res.ok) {
+      throw new Error("Google Sheets API 에러: " + res.status);
     }
+
+    const data = JSON.parse(text);
+    const rows = data.values || [];
+
+    songs = rows.map((row) => {
+      const artist = row[0] || "";
+      const title  = row[1] || "";
+      const inst   = row[2] || "";
+      const key    = row[3] || "";
+      const note   = row[4] || "";
+      const genreRaw = row[5] || "";
+
+      const genre = genreRaw
+        ? genreRaw.split(",").map((g) => g.trim()).filter(Boolean)
+        : [];
+
+      return { artist, title, inst, key, note, genre };
+    });
+
+  } catch (err) {
+    console.error("[loadSongsFromSheet ERROR]", err);
+    alert("구글 시트에서 데이터를 불러오는데 실패했어요 😭\n브라우저 콘솔을 확인해 주세요.");
+    songs = [];
   }
+ }
 
   // 랜덤 박스 초기화
   function resetRandomBox() {
