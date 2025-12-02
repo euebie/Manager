@@ -378,11 +378,10 @@
       </div>
     </section>
   </div>
-
   <script>
-  // ===== 전역 상태 =====
-  let songs = []; // 구글 시트에서 받아올 배열
-
+    
+  let songs = []; //구글 시트 연동할 전역 배열
+  
   const tbody = document.getElementById("songTbody");
   const searchInput = document.getElementById("searchInput");
   const genreFilter = document.getElementById("genreFilter");
@@ -393,160 +392,148 @@
   const emptyState = document.getElementById("emptyState");
   const bodyEl = document.body;
 
-  // ===== 구글 시트 설정 =====
+  // ✅ 구글 시트 설정
   const SHEET_ID = "1dtfPdSWGT6Jdb4J3ZRasu971TCtVNeUgEV_ehu8Q99-5hQ7rhNuQMegM";
   const API_KEY = "AIzaSyCK1AGp04IwVP2QTRxhDDnGXEa85jP7WuU";
   const SHEET_NAME = "리스트";
-  const RANGE = `${SHEET_NAME}!A3:F3000`; // 3행~3000행, A~F
+  
+  // ✅ 3행~3000행 / A열~F열만 읽기
+  const RANGE = `${SHEET_NAME}!A3:F3000`;
 
-  // ===== 구글 시트에서 데이터 로드 =====
   async function loadSongsFromSheet() {
     const url =
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
       `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
-    try {
-      console.log("[Sheets fetch URL]", url);
-      const res = await fetch(url);
-      console.log("[Sheets status]", res.status, res.statusText);
+ async function loadSongsFromSheet() {
+  const url =
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
+    `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
-      const text = await res.text();
-      console.log("[Sheets raw response]", text);
+  try {
+    const res = await fetch(url);
 
-      if (!res.ok) {
-        throw new Error("Google Sheets API 에러: " + res.status);
-      }
+    // 🔍 응답 전체 로그
+    console.log("[Sheets fetch URL]", url);
+    console.log("[Sheets status]", res.status, res.statusText);
 
-      const data = JSON.parse(text);
-      const rows = data.values || [];
+    const text = await res.text();   // 일단 텍스트로 전체 받아보기
+    console.log("[Sheets raw response]", text);
 
-      songs = rows.map((row) => {
-        const artist = row[0] || "";
-        const title  = row[1] || "";
-        const inst   = row[2] || "";
-        const key    = row[3] || "";
-        const note   = row[4] || "";
-        const genreRaw = row[5] || "";
-
-        const genre = genreRaw
-          ? genreRaw.split(",").map((g) => g.trim()).filter(Boolean)
-          : [];
-
-        return { artist, title, inst, key, note, genre };
-      });
-
-      console.log("[Songs parsed]", songs.length);
-
-    } catch (err) {
-      console.error("[loadSongsFromSheet ERROR]", err);
-      alert("구글 시트에서 데이터를 불러오는데 실패했어요 😭\n브라우저 콘솔을 확인해 주세요.");
-      songs = [];
+    if (!res.ok) {
+      throw new Error("Google Sheets API 에러: " + res.status);
     }
-  }
 
-  // ===== 랜덤 박스 =====
+    const data = JSON.parse(text);
+    const rows = data.values || [];
+
+    songs = rows.map((row) => {
+      const artist = row[0] || "";
+      const title  = row[1] || "";
+      const inst   = row[2] || "";
+      const key    = row[3] || "";
+      const note   = row[4] || "";
+      const genreRaw = row[5] || "";
+
+      const genre = genreRaw
+        ? genreRaw.split(",").map((g) => g.trim()).filter(Boolean)
+        : [];
+
+      return { artist, title, inst, key, note, genre };
+    });
+
+  } catch (err) {
+    console.error("[loadSongsFromSheet ERROR]", err);
+    alert("구글 시트에서 데이터를 불러오는데 실패했어요 😭\n브라우저 콘솔을 확인해 주세요.");
+    songs = [];
+  }
+ }
+
+  // 랜덤 박스 초기화
   function resetRandomBox() {
     randomBox.classList.add("hidden");
     randomText.textContent = "";
   }
 
-  // ===== 곡 개수 표시 =====
   function updateSongCount(filteredCount) {
-    const totalCount = songs.length;
+    const totalCount = songs.length; // 전체 곡 수
+
+    // 총 전체 곡 수 / 필터링된 곡 수
     songCountEl.textContent =
-      `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
+    `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
   }
 
-  // ===== 테이블 렌더링 (안전 버전) =====
-  function renderTable(list) {
-    tbody.innerHTML = "";
-
-    if (!list.length) {
-      emptyState.classList.remove("hidden");
-      return;
-    } else {
-      emptyState.classList.add("hidden");
-    }
-
-    list.forEach((song, index) => {
-      const tr = document.createElement("tr");
-
-      const tdIndex = document.createElement("td");
-      tdIndex.textContent = index + 1;
-
-      const tdArtist = document.createElement("td");
-      tdArtist.textContent = song.artist;
-
-      const tdTitle = document.createElement("td");
-      tdTitle.textContent = song.title;
-
-      const tdInst = document.createElement("td");
-      if (song.inst) {
-        const a = document.createElement("a");
-        a.href = song.inst;
-        a.target = "_blank";
-        a.className = "inst-link";
-        a.textContent = "🎧";
-        tdInst.appendChild(a);
-      }
-
-      const tdKey = document.createElement("td");
-      tdKey.textContent = song.key || "";
-
-      const tdNote = document.createElement("td");
-      tdNote.textContent = song.note || "";
-
-      tr.appendChild(tdIndex);
-      tr.appendChild(tdArtist);
-      tr.appendChild(tdTitle);
-      tr.appendChild(tdInst);
-      tr.appendChild(tdKey);
-      tr.appendChild(tdNote);
-
-      tbody.appendChild(tr);
-    });
+function renderTable(list) {
+  tbody.innerHTML = "";
+  
+  if (!list.length) {
+    emptyState.classList.remove("hidden");
+    return;
+  } else {
+    emptyState.classList.add("hidden");
   }
 
-  // ===== 검색/필터 =====
+  list.forEach((song, index) => {
+    const tr = document.createElement("tr");
+      
+    tr.innerHTML = `
+    <td>${index + 1}</td>
+    <td>${song.artist}</td>
+    <td>${song.title}</td>
+    <td>${song.inst ? `<a href="${song.inst}" target="_blank" class="inst-link">🎧</a>` : ""}</td>
+    <td>${song.key || ""}</td>
+    <td>${song.note || ""}</td>
+    `;
+    
+    tbody.appendChild(tr);
+  });
+}
+
   function normalize(str) {
     return (str || "")
       .toLowerCase()
-      .replace(/\s+/g, "");
+      .replace(/\s+/g, ""); // 모든 공백 제거
   }
 
-  function getFilteredSongs() {
-    const keyword = normalize(searchInput.value);
-    const filterGenre = genreFilter.value;
+function getFilteredSongs() {
+  const keyword = normalize(searchInput.value); // 입력값 공백 제거 + 소문자
+  const filterGenre = genreFilter.value;
 
-    return songs.filter((song) => {
-      const title = normalize(song.title);
-      const artist = normalize(song.artist);
-      const combined = normalize(`${song.artist || ""} ${song.title || ""}`);
+  return songs.filter((song) => {
+    // 곡 정보도 공백 제거 + 소문자
+    const title = normalize(song.title);
+    const artist = normalize(song.artist);
 
-      const matchKeyword =
-        !keyword ||
-        title.includes(keyword) ||
-        artist.includes(keyword) ||
-        combined.includes(keyword);
+    // 아티스트 + 제목을 합쳐서도 검색되게
+    const combined = normalize(`${song.artist || ""} ${song.title || ""}`);
 
-      const matchGenre =
-        filterGenre === "all" || (song.genre || []).includes(filterGenre);
+    const matchKeyword =
+      !keyword ||
+      title.includes(keyword) ||
+      artist.includes(keyword) ||
+      combined.includes(keyword);
 
-      return matchKeyword && matchGenre;
-    });
-  }
+    const matchGenre =
+      filterGenre === "all" || (song.genre || []).includes(filterGenre);
+
+    return matchKeyword && matchGenre;
+  });
+}
 
   function updateTable() {
     const filtered = getFilteredSongs();
     renderTable(filtered);
     updateSongCount(filtered.length);
+
+    // 필터/검색 결과가 바뀔 때마다 랜덤 박스 초기화
     resetRandomBox();
   }
 
-  // ===== 이벤트 바인딩 =====
+  // 검색/필터 이벤트
   searchInput.addEventListener("input", updateTable);
   genreFilter.addEventListener("change", updateTable);
 
+  // 랜덤 추천
   randomBtn.addEventListener("click", () => {
     const filtered = getFilteredSongs();
 
@@ -563,16 +550,12 @@
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
 
-  // ===== 초기 실행 =====
   async function init() {
-    console.log("[init] start");
-    await loadSongsFromSheet();
-    console.log("[init] loaded songs:", songs.length);
-    updateTable();
-    console.log("[init] done");
+    await loadSongsFromSheet(); // 시트에서 데이터 가져오기
+    updateTable();              // 테이블 렌더링 + 카운트 업데이트
   }
-
-  init();
+  
+  init(); // 실행
     
 </script>
 </body>
