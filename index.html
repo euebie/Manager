@@ -546,9 +546,12 @@ function getFilteredSongs() {
     randomText.textContent = `${pick.artist} - ${pick.title}`;
   });
 
-  // 최초 렌더
-  renderTable(songs);
-  updateSongCount(songs.length);
+  async function init() {
+    await loadSongsFromSheet(); // 시트에서 데이터 가져오기
+    updateTable();              // 테이블 렌더링 + 카운트 업데이트
+  }
+
+  init(); // 실행
 
 </script>
 </body>
