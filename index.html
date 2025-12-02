@@ -405,11 +405,6 @@
       `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
       `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
 
- async function loadSongsFromSheet() {
-  const url =
-    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/` +
-    `${encodeURIComponent(RANGE)}?key=${API_KEY}`;
-
   try {
     const res = await fetch(url);
 
