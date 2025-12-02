@@ -55,18 +55,18 @@
 
     /* 헤더 타이틀 크기 조정 */
     header .header-titles h1:nth-child(1) {
-      font-size: 1.6rem; /* 타이틀 */
+      font-size: 1.6rem;
       font-weight: 700;
     }
 
     header .header-titles h1:nth-child(2) {
-      font-size: 1.2rem; /* Ver. */
+      font-size: 1.2rem;
       font-weight: 600;
       opacity: 0.7;
     }
 
     header .header-titles p#songCount {
-      font-size: 1rem; /* 총 곡수 / 필터링 된 곡수 */
+      font-size: 1rem;
       margin-top: 4px;
     }
 
@@ -201,7 +201,6 @@
       color: #9ca3af;
     }
 
-    /* 랜덤 추천 애니메이션 */
     @keyframes popFade {
       0% {
         transform: scale(0.8);
@@ -308,7 +307,6 @@
       background: transparent;
     }
 
-    /* 링크 스타일 */
     .inst-link {
       text-decoration: none;
       color: inherit;
@@ -377,10 +375,18 @@
     </section>
   </div>
 
+  <script src="https://script.google.com/macros/s/AKfycbzms8mjcoPiAfa_0mSQ9yvVERj2xA7DiwlXhWHh3epxbUqdwS3b_DKNOvmdo4IbuAb0EA/exec"></script>
+
   <script>
     let songs = [];
 
-    const SHEET_JSON_URL = 'https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec';
+    if (window.EUEBIE_SONG_DATA && Array.isArray(window.EUEBIE_SONG_DATA.songs)) {
+      songs = window.EUEBIE_SONG_DATA.songs;
+      console.log('songs loaded:', songs.length);
+    } else {
+      console.error('EUEBIE_SONG_DATA 형식이 올바르지 않습니다.', window.EUEBIE_SONG_DATA);
+      songs = [];
+    }
 
     const tbody = document.getElementById("songTbody");
     const searchInput = document.getElementById("searchInput");
@@ -391,52 +397,17 @@
     const songCountEl = document.getElementById("songCount");
     const emptyState = document.getElementById("emptyState");
 
-    // ===== 랜덤 박스 초기화 =====
     function resetRandomBox() {
       randomBox.classList.add("hidden");
       randomText.textContent = "";
     }
 
-    // ===== 곡 개수 표시 =====
     function updateSongCount(filteredCount) {
       const totalCount = songs.length;
       songCountEl.textContent =
         `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
     }
 
-    // ===== 구글 시트에서 JSON 로드 =====
-    async function loadSongsFromSheet() {
-      try {
-        const res = await fetch(SHEET_JSON_URL);
-        if (!res.ok) {
-          throw new Error('시트 요청 실패: ' + res.status);
-        }
-
-        const raw = await res.json();
-        console.log('sheet raw:', raw);
-
-        const data = Array.isArray(raw) ? raw : (raw.data || raw.rows || []);
-
-        songs = data.map((row) => ({
-          artist: row.artist || '',
-          title : row.title  || '',
-          inst  : row.inst   || '',
-          key   : row.key    || '',
-          note  : row.note   || '',
-          genre : typeof row.genre === 'string'
-            ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
-            : (row.genre || [])
-        }));
-
-        updateTable();
-      } catch (err) {
-        console.error(err);
-        emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
-        emptyState.classList.remove('hidden');
-      }
-    }
-
-    // ===== 테이블 렌더링 =====
     function renderTable(list) {
       tbody.innerHTML = "";
 
@@ -463,7 +434,6 @@
       });
     }
 
-    // ===== 검색/필터 =====
     function normalize(str) {
       return (str || "")
         .toLowerCase()
@@ -499,7 +469,6 @@
       resetRandomBox();
     }
 
-    // ===== 이벤트 바인딩 =====
     searchInput.addEventListener("input", updateTable);
     genreFilter.addEventListener("change", updateTable);
 
@@ -519,8 +488,7 @@
       randomText.textContent = `${pick.artist} - ${pick.title}`;
     });
 
-    // ✅ 페이지 로드되면 바로 시트에서 곡 목록 불러오기
-    loadSongsFromSheet();
+    updateTable();
     
   </script>
 </body>
