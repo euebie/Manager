@@ -382,6 +382,8 @@
   <script>
   let songs = [];
 
+  const SHEET_JSON_URL = 'https://script.google.com/macros/s/AKfycbwWn78FYLAjDvsX6zvJr3Rh2stozWTB9Qb1dwUdsIluwuUS2pufZGIGycHM6J4Uf3-rsQ/exec';
+
   const tbody = document.getElementById("songTbody");
   const searchInput = document.getElementById("searchInput");
   const genreFilter = document.getElementById("genreFilter");
@@ -405,6 +407,38 @@
       `총 ${totalCount.toLocaleString()}곡 / 현재 ${filteredCount.toLocaleString()}곡`;
   }
 
+  // ===== 구글 시트에서 JSON 로드 =====
+  async function loadSongsFromSheet() {
+    try {
+    // 1) 시트 JSON 불러오기
+    const res = await fetch(SHEET_JSON_URL);
+    if (!res.ok) {
+      throw new Error('시트 요청 실패: ' + res.status);
+    }
+
+    const data = await res.json();
+
+    // 2) 받아온 데이터를 songs 배열 형태로 변환
+    songs = data.map((row) => ({
+      artist: row.artist || '',
+      title : row.title  || '',
+      inst  : row.inst   || '',
+      key   : row.key    || '',
+      note  : row.note   || '',
+      genre : typeof row.genre === 'string'
+        ? row.genre.split(',').map(g => g.trim()).filter(Boolean)
+        : (row.genre || [])
+    }));
+
+    // 3) 화면 업데이트
+    updateTable();
+  } catch (err) {
+    console.error(err);
+    emptyState.textContent = '노래 목록을 불러오는데 실패했어요 🥲';
+    emptyState.classList.remove('hidden');
+  }
+}
+    
   // ===== 테이블 렌더링 =====
   function renderTable(list) {
     tbody.innerHTML = "";
@@ -480,6 +514,8 @@
       randomText.textContent = "현재 필터 조건에 맞는 노래가 없어요 🥲";
       return;
     }
+
+    document.addEventListener("DOMContentLoaded", loadSongsFromSheet);
 
     const idx = Math.floor(Math.random() * filtered.length);
     const pick = filtered[idx];
