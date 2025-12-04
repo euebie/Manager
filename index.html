@@ -316,6 +316,28 @@
     .inst-link:hover {
       opacity: 0.7;
     }
+
+    /* ===== 표 열 구분선 추가 ===== */
+    table th,
+    table td {
+      border-right: 1px solid #d1d5db;
+    }
+
+    table th:last-child,
+    table td:last-child {
+      border-right: none;
+    }
+
+    body[data-theme="dark"] table th,
+    body[data-theme="dark"] table td {
+      border-right: 1px solid #374151;
+    }
+
+    body[data-theme="dark"] table th:last-child,
+    body[data-theme="dark"] table td:last-child {
+      border-right: none;
+    }
+    
   </style>
 </head>
 
